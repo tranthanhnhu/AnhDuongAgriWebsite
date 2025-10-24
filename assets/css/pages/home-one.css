@@ -64,7 +64,8 @@
   color: var(--white-color);
   text-transform: capitalize;
   margin-bottom: 30px;
-  font-family: var(--accent-font);
+  /* font-family: var(--accent-font); */
+  font-family: cursive;
   font-weight: 400;
   font-size: 100px;
   line-height: 125px;
