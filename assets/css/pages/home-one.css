@@ -877,3 +877,82 @@
   -webkit-transform: rotate(-45deg);
           transform: rotate(-45deg);
 }
+
+
+
+/* Shop Section CSS */
+.agricko-shop-sec {
+  background-color: #FBFBF7;
+}
+
+.agricko-product-item {
+  background-color: var(--white-color);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.agricko-product-item:hover .product-thumbnail .action-button {
+  bottom: 30px;
+  visibility: visible;
+  opacity: 1;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+}
+.agricko-product-item .product-thumbnail {
+  position: relative;
+  z-index: 1;
+}
+.agricko-product-item .product-thumbnail img {
+  width: 100%;
+}
+.agricko-product-item .product-thumbnail .new {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  padding: 6px 15px;
+  line-height: 1;
+}
+.agricko-product-item .product-thumbnail .action-button {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  width: 100%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  visibility: hidden;
+  opacity: 0;
+}
+.agricko-product-item .product-thumbnail .action-button .icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--white-color);
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+.agricko-product-item .product-info {
+  padding-top: 20px;
+}
+.agricko-product-item .product-info .price {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+.agricko-product-item .product-info .price .prev-price {
+  color: var(--heading-color);
+  text-decoration: line-through;
+  margin-right: 5px;
+}
