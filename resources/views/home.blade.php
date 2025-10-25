@@ -214,7 +214,11 @@
                 <!--=== Agricko Product Item ===-->
                 <div class="agricko-product-item mb-30" data-aos="fade-up" data-aos-duration="{{ 1200 + ($index * 200) }}">
                     <div class="product-thumbnail">
-                        <img src="{{ asset('assets/images/home-two/products/product-img' . (($index % 8) + 1) . '.jpg') }}" alt="Product Image">
+                        @if($product->img_1)
+                            <img src="{{ Storage::url($product->img_1) }}" alt="{{ $product->name }}">
+                        @else
+                            <img src="{{ asset('assets/images/home-two/products/product-img' . (($index % 8) + 1) . '.jpg') }}" alt="{{ $product->name }}">
+                        @endif
                         @if($product->sale_price && $product->sale_price < $product->original_price)
                         <div class="new">Sale</div>
                         @endif
@@ -634,7 +638,11 @@
                 <!--=== Agricko Post Item ===-->
                 <div class="agricko-post-item mb-40" data-aos="fade-up" data-aos-duration="{{ 1000 + ($index * 200) }}">
                     <div class="post-thumbnail">
-                        <img src="{{ asset('assets/images/home-one/blog/blog-img' . (($index % 3) + 1) . '.jpg') }}" alt="Blog Image">
+                        @if($blog->featured_image)
+                            <img src="{{ Storage::url($blog->featured_image) }}" alt="{{ $blog->title }}">
+                        @else
+                            <img src="{{ asset('assets/images/home-one/blog/blog-img' . (($index % 3) + 1) . '.jpg') }}" alt="{{ $blog->title }}">
+                        @endif
                     </div>
                     <div class="post-content">
                         <div class="post-meta">
@@ -670,6 +678,14 @@
 
 .search-results-content {
     padding: 15px;
+}
+
+/* Blog image sizing */
+.agricko-post-item .post-thumbnail img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 .search-section {

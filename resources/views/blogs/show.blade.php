@@ -31,7 +31,11 @@
                 <article class="blog-post">
                     <!-- Featured Image -->
                     <div class="blog-featured-image mb-4">
-                        <img src="{{ asset('assets/images/home-one/blog/blog-img1.jpg') }}" alt="{{ $blog->title }}" class="img-fluid rounded">
+                        @if($blog->featured_image)
+                            <img src="{{ Storage::url($blog->featured_image) }}" alt="{{ $blog->title }}" class="img-fluid rounded">
+                        @else
+                            <img src="{{ asset('assets/images/home-one/blog/blog-img1.jpg') }}" alt="{{ $blog->title }}" class="img-fluid rounded">
+                        @endif
                     </div>
                     
                     <!-- Blog Meta -->
@@ -288,6 +292,27 @@
 .social-share .btn {
     margin-right: 10px;
     margin-bottom: 10px;
+}
+
+/* Blog featured image sizing */
+.blog-featured-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .blog-featured-image img {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .blog-featured-image img {
+        height: 250px;
+    }
 }
 </style>
 @endpush

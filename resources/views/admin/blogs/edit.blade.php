@@ -17,7 +17,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form action="{{ route('admin.blogs.update', $blog) }}" method="POST">
+        <form action="{{ route('admin.blogs.update', $blog) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="row">
@@ -36,6 +36,20 @@
                         @error('short_description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="featured_image" class="form-label">Ảnh đại diện</label>
+                        @if($blog->featured_image)
+                            <div class="mb-2">
+                                <img src="{{ Storage::url($blog->featured_image) }}" alt="Ảnh hiện tại" class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                        @endif
+                        <input type="file" class="form-control @error('featured_image') is-invalid @enderror" id="featured_image" name="featured_image" accept="image/*">
+                        @error('featured_image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Ảnh sẽ được hiển thị làm ảnh đại diện của bài viết</div>
                     </div>
                     
                     <div class="mb-3">
@@ -115,43 +129,27 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
-    ClassicEditor
-        .create(document.querySelector('#content'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', 'strikethrough', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'blockQuote', 'insertTable', '|',
-                    'link', 'imageUpload', '|',
-                    'undo', 'redo'
-                ]
-            },
-            language: 'vi',
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:inline',
-                    'imageStyle:block',
-                    'imageStyle:side'
-                ]
-            },
-            table: {
-                contentToolbar: [
-                    'tableColumn',
-                    'tableRow',
-                    'mergeTableCells'
-                ]
-            }
-        })
-        .then(editor => {
-            console.log('CKEditor 5 initialized');
-        })
-        .catch(error => {
-            console.error('Error initializing CKEditor 5:', error);
-        });
-</script>
+    CKEDITOR.replace('content', {
+        toolbar: [
+            { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
+            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+            { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+            { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+            '/',
+            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
+            { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+            '/',
+            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+            { name: 'colors', items: ['TextColor', 'BGColor'] },
+            { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
+        ],
+        language: 'vi',
+        filebrowserImageUploadUrl: '/api/admin/upload/image',
+        filebrowserImageBrowseUrl: '/api/admin/upload/image',
+        height: 400
+    });
 @endpush

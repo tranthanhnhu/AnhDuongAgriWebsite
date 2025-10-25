@@ -7,6 +7,7 @@ use App\Models\Blog;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -39,22 +40,22 @@ class BlogController extends Controller
             'content' => 'required|string',
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'author' => 'nullable|string|max:255',
-            'is_featured' => 'boolean',
+            'is_featured' => 'nullable|in:on,1,true',
             'fb_link' => 'nullable|url',
             'status' => 'required|in:draft,published',
+            'featured_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
-        $blog = Blog::create([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
-            'short_description' => $request->short_description,
-            'content' => $request->content,
-            'blog_category_id' => $request->blog_category_id,
-            'author' => $request->author ?? 'Ánh Dương Agri',
-            'is_featured' => $request->has('is_featured'),
-            'fb_link' => $request->fb_link,
-            'status' => $request->status,
-        ]);
+        $data = $request->all();
+        $data['slug'] = Str::slug($request->title);
+        $data['is_featured'] = $request->has('is_featured');
+
+        // Handle featured image upload
+        if ($request->hasFile('featured_image')) {
+            $data['featured_image'] = $request->file('featured_image')->store('blogs', 'public');
+        }
+
+        Blog::create($data);
 
         return redirect()->route('admin.blogs.index')->with('success', 'Bài viết đã được tạo thành công!');
     }
@@ -87,22 +88,26 @@ class BlogController extends Controller
             'content' => 'required|string',
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'author' => 'nullable|string|max:255',
-            'is_featured' => 'boolean',
+            'is_featured' => 'nullable|in:on,1,true',
             'fb_link' => 'nullable|url',
             'status' => 'required|in:draft,published',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
-        $blog->update([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
-            'short_description' => $request->short_description,
-            'content' => $request->content,
-            'blog_category_id' => $request->blog_category_id,
-            'author' => $request->author ?? 'Ánh Dương Agri',
-            'is_featured' => $request->has('is_featured'),
-            'fb_link' => $request->fb_link,
-            'status' => $request->status,
-        ]);
+        $data = $request->all();
+        $data['slug'] = Str::slug($request->title);
+        $data['is_featured'] = $request->has('is_featured');
+
+        // Handle featured image upload
+        if ($request->hasFile('featured_image')) {
+            // Delete old image
+            if ($blog->featured_image) {
+                Storage::disk('public')->delete($blog->featured_image);
+            }
+            $data['featured_image'] = $request->file('featured_image')->store('blogs', 'public');
+        }
+
+        $blog->update($data);
 
         return redirect()->route('admin.blogs.index')->with('success', 'Bài viết đã được cập nhật thành công!');
     }

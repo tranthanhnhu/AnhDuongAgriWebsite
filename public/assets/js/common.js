@@ -87,17 +87,36 @@ Version: 1.0
 	//===== Back to top
 
     $(window).on('scroll', function(event) {
-        if ($(this).scrollTop() > 600) {
-            $('.back-to-top').fadeIn(200)
+        if ($(this).scrollTop() > 300) {
+            $('.back-to-top').addClass('show');
         } else {
-            $('.back-to-top').fadeOut(200)
+            $('.back-to-top').removeClass('show');
         }
     });
+    
     $('.back-to-top').on('click', function(event) {
         event.preventDefault();
+        
+        // Add click animation
+        $(this).addClass('clicked');
+        setTimeout(() => {
+            $(this).removeClass('clicked');
+        }, 150);
+        
+        // Smooth scroll to top with custom easing
         $('html, body').animate({
-            scrollTop: 0,
-        }, 1500);
+            scrollTop: 0
+        }, {
+            duration: 600,
+            easing: 'swing',
+            complete: function() {
+                // Optional: Add a subtle bounce effect
+                $('.back-to-top').addClass('bounce');
+                setTimeout(() => {
+                    $('.back-to-top').removeClass('bounce');
+                }, 300);
+            }
+        });
     });
 
 	//===== Magnific-popup js

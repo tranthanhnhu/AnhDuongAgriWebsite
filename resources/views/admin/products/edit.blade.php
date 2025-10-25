@@ -17,7 +17,30 @@
 
 <div class="card">
     <div class="card-body">
-        <form action="{{ route('admin.products.update', $product) }}" method="POST" id="product-form">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <h5>Có lỗi xảy ra:</h5>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <form action="{{ route('admin.products.update', $product) }}" method="POST" id="product-form" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="row">
@@ -75,6 +98,55 @@
                 @error('short_description')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+            </div>
+
+            <!-- Product Images -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="img_1" class="form-label">Ảnh chính</label>
+                        @if($product->img_1)
+                            <div class="mb-2">
+                                <img src="{{ Storage::url($product->img_1) }}" alt="Ảnh hiện tại" class="img-thumbnail" style="max-width: 150px;">
+                            </div>
+                        @endif
+                        <input type="file" class="form-control @error('img_1') is-invalid @enderror" id="img_1" name="img_1" accept="image/*">
+                        @error('img_1')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Ảnh sẽ được hiển thị chính trên trang sản phẩm</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="img_2" class="form-label">Ảnh phụ 1</label>
+                        @if($product->img_2)
+                            <div class="mb-2">
+                                <img src="{{ Storage::url($product->img_2) }}" alt="Ảnh hiện tại" class="img-thumbnail" style="max-width: 150px;">
+                            </div>
+                        @endif
+                        <input type="file" class="form-control @error('img_2') is-invalid @enderror" id="img_2" name="img_2" accept="image/*">
+                        @error('img_2')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Ảnh trong slider</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="img_3" class="form-label">Ảnh phụ 2</label>
+                        @if($product->img_3)
+                            <div class="mb-2">
+                                <img src="{{ Storage::url($product->img_3) }}" alt="Ảnh hiện tại" class="img-thumbnail" style="max-width: 150px;">
+                            </div>
+                        @endif
+                        <input type="file" class="form-control @error('img_3') is-invalid @enderror" id="img_3" name="img_3" accept="image/*">
+                        @error('img_3')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Ảnh trong slider</div>
+                    </div>
+                </div>
             </div>
 
             <div class="mb-3">
@@ -170,124 +242,73 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
     let descriptionsEditor, additionalInfoEditor, reviewEditor;
     
     // Initialize CKEditor instances
-    ClassicEditor
-        .create(document.querySelector('#descriptions'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', 'strikethrough', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'blockQuote', 'insertTable', '|',
-                    'link', 'imageUpload', '|',
-                    'undo', 'redo'
-                ]
-            },
-            language: 'vi',
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:inline',
-                    'imageStyle:block',
-                    'imageStyle:side'
-                ]
-            },
-            table: {
-                contentToolbar: [
-                    'tableColumn',
-                    'tableRow',
-                    'mergeTableCells'
-                ]
-            }
-        })
-        .then(editor => {
-            descriptionsEditor = editor;
-            console.log('CKEditor 5 initialized for descriptions');
-        })
-        .catch(error => {
-            console.error('Error initializing CKEditor 5:', error);
-        });
+    descriptionsEditor = CKEDITOR.replace('descriptions', {
+        toolbar: [
+            { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
+            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+            { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+            '/',
+            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
+            { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+            '/',
+            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+            { name: 'colors', items: ['TextColor', 'BGColor'] },
+            { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
+        ],
+        language: 'vi',
+        filebrowserImageUploadUrl: '/api/admin/upload/image',
+        filebrowserImageBrowseUrl: '/api/admin/upload/image',
+        height: 300
+    });
 
-    ClassicEditor
-        .create(document.querySelector('#additional_info'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', 'strikethrough', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'blockQuote', 'insertTable', '|',
-                    'link', 'imageUpload', '|',
-                    'undo', 'redo'
-                ]
-            },
-            language: 'vi',
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:inline',
-                    'imageStyle:block',
-                    'imageStyle:side'
-                ]
-            },
-            table: {
-                contentToolbar: [
-                    'tableColumn',
-                    'tableRow',
-                    'mergeTableCells'
-                ]
-            }
-        })
-        .then(editor => {
-            additionalInfoEditor = editor;
-            console.log('CKEditor 5 initialized for additional_info');
-        })
-        .catch(error => {
-            console.error('Error initializing CKEditor 5:', error);
-        });
+    additionalInfoEditor = CKEDITOR.replace('additional_info', {
+        toolbar: [
+            { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
+            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+            { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+            '/',
+            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
+            { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+            '/',
+            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+            { name: 'colors', items: ['TextColor', 'BGColor'] },
+            { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
+        ],
+        language: 'vi',
+        filebrowserImageUploadUrl: '/api/admin/upload/image',
+        filebrowserImageBrowseUrl: '/api/admin/upload/image',
+        height: 300
+    });
 
-    ClassicEditor
-        .create(document.querySelector('#review'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', 'strikethrough', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'blockQuote', 'insertTable', '|',
-                    'link', 'imageUpload', '|',
-                    'undo', 'redo'
-                ]
-            },
-            language: 'vi',
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:inline',
-                    'imageStyle:block',
-                    'imageStyle:side'
-                ]
-            },
-            table: {
-                contentToolbar: [
-                    'tableColumn',
-                    'tableRow',
-                    'mergeTableCells'
-                ]
-            }
-        })
-        .then(editor => {
-            reviewEditor = editor;
-            console.log('CKEditor 5 initialized for review');
-        })
-        .catch(error => {
-            console.error('Error initializing CKEditor 5:', error);
-        });
+    reviewEditor = CKEDITOR.replace('review', {
+        toolbar: [
+            { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
+            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+            { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+            '/',
+            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
+            { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+            '/',
+            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+            { name: 'colors', items: ['TextColor', 'BGColor'] },
+            { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
+        ],
+        language: 'vi',
+        filebrowserImageUploadUrl: '/api/admin/upload/image',
+        filebrowserImageBrowseUrl: '/api/admin/upload/image',
+        height: 300
+    });
     
     // Handle form submission
     document.getElementById('product-form').addEventListener('submit', function(e) {

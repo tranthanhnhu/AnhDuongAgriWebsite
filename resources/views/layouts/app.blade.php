@@ -169,14 +169,32 @@
                 background: #f8f9fa;
             }
             
-            .search-item-content h6 {
+            .search-item-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .search-item-image {
+                width: 50px;
+                height: 50px;
+                object-fit: cover;
+                border-radius: 5px;
+                flex-shrink: 0;
+            }
+            
+            .search-item-text {
+                flex: 1;
+            }
+            
+            .search-item-text h6 {
                 font-size: 14px;
                 font-weight: 600;
                 margin-bottom: 5px;
                 color: #333;
             }
             
-            .search-item-content p {
+            .search-item-text p {
                 font-size: 12px;
                 color: #666;
                 margin: 0;
@@ -215,6 +233,43 @@
                 padding: 20px;
                 color: #666;
                 font-style: italic;
+            }
+            
+            /* Smooth scroll to top button */
+            .back-to-top {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+                transform: translateY(0);
+            }
+            
+            .back-to-top:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+            
+            .back-to-top:active {
+                transform: translateY(-1px);
+                transition: all 0.1s ease;
+            }
+            
+            .back-to-top.clicked {
+                transform: scale(0.95);
+                transition: all 0.1s ease;
+            }
+            
+            .back-to-top.bounce {
+                animation: bounceEffect 0.3s ease;
+            }
+            
+            @keyframes bounceEffect {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+            
+            /* Smooth scroll behavior */
+            html {
+                scroll-behavior: smooth;
             }
             
         </style>
@@ -274,7 +329,7 @@
                                     </ul>
                                 </nav>
                                 <!--=== Theme Nav Button ===-->
-                                <div class="theme-nav-button mt-3 d-block d-lg-none">
+                                <div class="theme-nav-button mt-3 d-block d-lg-none" style="display: none !important;">
                                     <a href="{{ route('contact') }}" class="theme-btn style-one">Liên hệ</a>
                                 </div>
                                 <!--=== Theme Menu Bottom ===-->
@@ -300,9 +355,9 @@
                                     </div>
                                 </div>
                                 <!-- Mobile Search Icon -->
-                                <div class="search-btn action-btn d-md-none" data-bs-toggle="modal" data-bs-target="#search-modal">
+                                <!-- <div class="search-btn action-btn d-md-none" data-bs-toggle="modal" data-bs-target="#search-modal">
                                     <i class="far fa-search"></i>
-                                </div>
+                                </div> -->
                                 <div class="nav-button d-none d-md-block">
                                     <a href="{{ route('contact') }}" class="theme-btn style-one">Liên hệ</a>
                                 </div>
@@ -497,7 +552,7 @@
         </footer><!--====== End Footer ======-->
         
         <!--====== Back To Top  ======-->
-        <div class="back-to-top" ><i class="far fa-arrow-up"></i></div>
+        <div class="back-to-top" id="backToTop"><i class="far fa-arrow-up"></i></div>
         
         <!--====== Jquery js ======-->
         <script src="{{ asset('assets/js/plugins/jquery-3.7.1.min.js') }}"></script>
@@ -602,12 +657,16 @@
                             resultsHtml += '<div class="products-list">';
                             
                             data.products.forEach(function(product) {
+                                const productImage = product.img_1 ? `/storage/${product.img_1}` : '/assets/images/home-two/products/product-img1.jpg';
                                 resultsHtml += `
                                     <div class="search-item">
                                         <a href="/products/${product.slug}">
                                             <div class="search-item-content">
-                                                <h6>${product.name}</h6>
-                                                <p>${product.short_description || ''}</p>
+                                                <img src="${productImage}" alt="${product.name}" class="search-item-image">
+                                                <div class="search-item-text">
+                                                    <h6>${product.name}</h6>
+                                                    <p>${product.short_description || ''}</p>
+                                                </div>
                                             </div>
                                         </a>
                                     </div>
@@ -679,6 +738,44 @@
                         }
                     }
                 });
+                
+                // Smooth scroll to top functionality
+                $('#backToTop').on('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Add click animation
+                    $(this).addClass('clicked');
+                    setTimeout(() => {
+                        $(this).removeClass('clicked');
+                    }, 150);
+                    
+                    // Smooth scroll to top with custom easing
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, {
+                        duration: 600,
+                        easing: 'swing',
+                        complete: function() {
+                            // Optional: Add a subtle bounce effect
+                            $('#backToTop').addClass('bounce');
+                            setTimeout(() => {
+                                $('#backToTop').removeClass('bounce');
+                            }, 300);
+                        }
+                    });
+                });
+                
+                // Show/hide back to top button based on scroll position
+                $(window).on('scroll', function() {
+                    if ($(this).scrollTop() > 300) {
+                        $('#backToTop').fadeIn(300);
+                    } else {
+                        $('#backToTop').fadeOut(300);
+                    }
+                });
+                
+                // Initialize back to top button as hidden
+                $('#backToTop').hide();
             });
         </script>
         

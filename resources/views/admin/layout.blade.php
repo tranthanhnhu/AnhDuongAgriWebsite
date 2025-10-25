@@ -112,7 +112,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <!-- CKEditor 4 Free -->
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     @stack('scripts')
 </body>
 </html>

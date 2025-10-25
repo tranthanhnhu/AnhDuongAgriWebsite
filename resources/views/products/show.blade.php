@@ -29,14 +29,33 @@
             <div class="col-lg-6">
                 <!-- Product Images -->
                 <div class="product-images">
-                    <div class="main-image mb-3">
-                        <img src="{{ asset('assets/images/home-two/products/product-img1.jpg') }}" alt="{{ $product->name }}" class="img-fluid rounded">
-                    </div>
-                    <div class="thumbnail-images d-flex gap-2">
-                        <img src="{{ asset('assets/images/home-two/products/product-img1.jpg') }}" alt="{{ $product->name }}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
-                        <img src="{{ asset('assets/images/home-two/products/product-img2.jpg') }}" alt="{{ $product->name }}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
-                        <img src="{{ asset('assets/images/home-two/products/product-img3.jpg') }}" alt="{{ $product->name }}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
-                    </div>
+                    @php
+                        $images = [];
+                        if($product->img_1) $images[] = $product->img_1;
+                        if($product->img_2) $images[] = $product->img_2;
+                        if($product->img_3) $images[] = $product->img_3;
+                    @endphp
+                    
+                    @if(count($images) > 0)
+                        <div class="main-image mb-3">
+                            <img id="mainProductImage" src="{{ Storage::url($images[0]) }}" alt="{{ $product->name }}" class="img-fluid rounded" style="width: 100%; height: 400px; object-fit: cover; cursor: pointer;" onclick="openImageModal('{{ Storage::url($images[0]) }}')">
+                        </div>
+                        
+                        @if(count($images) > 1)
+                        <div class="thumbnail-images d-flex gap-2 flex-wrap">
+                            @foreach($images as $index => $image)
+                                <img src="{{ Storage::url($image) }}" alt="{{ $product->name }}" class="img-thumbnail thumbnail-img" 
+                                     style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" 
+                                     onclick="changeMainImage('{{ Storage::url($image) }}', this)"
+                                     data-image="{{ Storage::url($image) }}">
+                            @endforeach
+                        </div>
+                        @endif
+                    @else
+                        <div class="main-image mb-3">
+                            <img src="{{ asset('assets/images/home-two/products/product-img1.jpg') }}" alt="{{ $product->name }}" class="img-fluid rounded" style="width: 100%; height: 400px; object-fit: cover;">
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="col-lg-6">
@@ -163,7 +182,11 @@
                     @foreach($relatedProducts as $relatedProduct)
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="card h-100">
-                            <img src="{{ asset('assets/images/home-two/products/product-img' . (($loop->index % 8) + 1) . '.jpg') }}" class="card-img-top" alt="{{ $relatedProduct->name }}" style="height: 200px; object-fit: cover;">
+                            @if($relatedProduct->img_1)
+                                <img src="{{ Storage::url($relatedProduct->img_1) }}" class="card-img-top" alt="{{ $relatedProduct->name }}" style="height: 200px; object-fit: cover;">
+                            @else
+                                <img src="{{ asset('assets/images/home-two/products/product-img' . (($loop->index % 8) + 1) . '.jpg') }}" class="card-img-top" alt="{{ $relatedProduct->name }}" style="height: 200px; object-fit: cover;">
+                            @endif
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">{{ $relatedProduct->name }}</h5>
                                 <p class="card-text text-muted">{{ Str::limit($relatedProduct->short_description, 100) }}</p>
@@ -189,6 +212,51 @@
     </div>
 </section><!--====== End Product Details Section ======-->
 @endsection
+
+@push('scripts')
+<script>
+function changeMainImage(imageSrc, clickedThumbnail) {
+    // Update main image
+    document.getElementById('mainProductImage').src = imageSrc;
+    document.getElementById('mainProductImage').setAttribute('onclick', `openImageModal('${imageSrc}')`);
+    
+    // Update thumbnail active state
+    document.querySelectorAll('.thumbnail-img').forEach(thumb => {
+        thumb.style.border = '2px solid transparent';
+    });
+    clickedThumbnail.style.border = '2px solid #28a745';
+}
+
+function openImageModal(imageSrc) {
+    // Create modal if not exists
+    let modal = document.getElementById('imageModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'imageModal';
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Hình ảnh sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modalImage" src="" class="img-fluid" style="max-height: 70vh;">
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Set image and show modal
+    document.getElementById('modalImage').src = imageSrc;
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+</script>
+@endpush
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/pages/innerpage.css') }}">
@@ -223,11 +291,27 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+.nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-tabs .nav-item {
+    flex: 1;
+    min-width: 0;
+}
+
 .nav-tabs .nav-link {
     border: none;
     border-bottom: 2px solid transparent;
     color: #666;
     font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
 }
 
 .nav-tabs .nav-link.active {
@@ -237,6 +321,23 @@
 
 .tab-content {
     border: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .nav-tabs .nav-link {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+.thumbnail-img {
+    transition: all 0.3s ease;
+}
+
+.thumbnail-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 </style>
 @endpush

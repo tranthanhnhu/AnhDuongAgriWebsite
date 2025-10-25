@@ -469,10 +469,45 @@ label {
   z-index: 2;
   cursor: pointer;
   color: var(--white-color);
+  /* Smooth transitions */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+  /* Initially hidden */
+  opacity: 0;
+  visibility: hidden;
 }
 .back-to-top:hover {
   color: var(--primary-black-color);
   color: var(--white-color);
+  /* Hover effect */
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+.back-to-top:active {
+  transform: translateY(-1px);
+  transition: all 0.1s ease;
+}
+.back-to-top.clicked {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+.back-to-top.bounce {
+  animation: bounceEffect 0.3s ease;
+}
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes bounceEffect {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
 }
 
 /* Preloader CSS */
@@ -1188,6 +1223,11 @@ label {
   }
   .header-navigation .theme-nav-button .theme-btn.style-one {
     padding: 17px 24px;
+  }
+  
+  /* Hide contact button in mobile menu */
+  .header-navigation .theme-nav-button {
+    display: none !important;
   }
   .header-navigation .theme-menu-bottom h5 {
     margin-bottom: 25px;

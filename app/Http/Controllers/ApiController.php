@@ -9,35 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class AdminController extends Controller
+class ApiController extends Controller
 {
-    public function index()
-    {
-        $stats = [
-            'total_products' => Product::count(),
-            'total_blogs' => Blog::count(),
-            'new_contacts' => Contact::where('status', 'new')->count(),
-            'featured_products' => Product::where('is_featured', true)->count(),
-        ];
-
-        $recentProducts = Product::latest()->limit(5)->get();
-        $recentContacts = Contact::latest()->limit(5)->get();
-
-        return view('admin.dashboard', compact('stats', 'recentProducts', 'recentContacts'));
-    }
-
-    public function contacts()
-    {
-        $contacts = Contact::latest()->paginate(10);
-        return view('admin.contacts.index', compact('contacts'));
-    }
-
-    public function updateContact(Request $request, Contact $contact)
-    {
-        $contact->update(['status' => $request->status]);
-        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
-    }
-
     public function uploadImage(Request $request)
     {
         // Handle GET request for CKEditor browse
@@ -46,7 +19,6 @@ class AdminController extends Controller
         }
 
         // Handle POST request for CKEditor upload
-        // Skip CSRF verification for CKEditor uploads
         if ($request->hasFile('upload')) {
             $file = $request->file('upload');
             
@@ -61,7 +33,7 @@ class AdminController extends Controller
             }
             
             $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/uploads', $filename);
+            $path = $file->storeAs('uploads', $filename, 'public');
             
             $url = Storage::url($path);
             

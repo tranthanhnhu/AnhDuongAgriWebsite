@@ -32,7 +32,11 @@
                     <!--=== Agricko Post Item ===-->
                     <div class="agricko-post-item mb-40" data-aos="fade-up" data-aos-duration="{{ 1000 + ($index * 200) }}">
                         <div class="post-thumbnail">
-                            <img src="{{ asset('assets/images/innerpage/blog/blog-list' . (($index % 3) + 1) . '.jpg') }}" alt="blog image">
+                            @if($blog->featured_image)
+                                <img src="{{ Storage::url($blog->featured_image) }}" alt="{{ $blog->title }}">
+                            @else
+                                <img src="{{ asset('assets/images/innerpage/blog/blog-list' . (($index % 3) + 1) . '.jpg') }}" alt="{{ $blog->title }}">
+                            @endif
                             <div class="category-btn">{{ $blog->blogCategory->name ?? 'Uncategorized' }}</div>
                         </div>
                         <div class="post-content">
@@ -59,7 +63,7 @@
                 <!--===  Sidebar Widget Area  ===-->
                 <div class="sidebar-widget-area">
                     <!--===  Sidebar Widget  ===-->
-                    <div class="sidebar-widget sidebar-search-widget mb-30" data-aos="fade-up" data-aos-duration="600">
+                    <!-- <div class="sidebar-widget sidebar-search-widget mb-30" data-aos="fade-up" data-aos-duration="600">
                         <div class="widget-content">
                             <form autocomplete="off">
                                 <div class="form-group">
@@ -68,7 +72,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> -->
                     <!--===  Sidebar Widget  ===-->
                     <div class="sidebar-widget sidebar-categories-widget mb-30" data-aos="fade-up" data-aos-duration="800">
                         <h4 class="widget-title">Danh mục bài viết</h4>
@@ -139,4 +143,26 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/pages/innerpage.css') }}">
+<style>
+/* Blog image sizing for list page */
+.agricko-post-item .post-thumbnail img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .agricko-post-item .post-thumbnail img {
+        height: 220px;
+    }
+}
+
+@media (max-width: 576px) {
+    .agricko-post-item .post-thumbnail img {
+        height: 200px;
+    }
+}
+</style>
 @endpush
