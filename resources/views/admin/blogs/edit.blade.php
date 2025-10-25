@@ -131,12 +131,14 @@
 @push('scripts')
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
-    CKEDITOR.replace('content', {
+    let contentEditor;
+    
+    // Initialize CKEditor instance
+    contentEditor = CKEDITOR.replace('content', {
         toolbar: [
             { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
             { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
             { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
-            { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
             '/',
             { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
             { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
@@ -152,4 +154,18 @@
         filebrowserImageBrowseUrl: '/api/admin/upload/image',
         height: 400
     });
+    
+    // Handle form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log('Blog edit form submitted');
+        
+        // Update textarea value with CKEditor content before submission
+        if (contentEditor) {
+            document.getElementById('content').value = contentEditor.getData();
+            console.log('Content updated:', contentEditor.getData());
+        }
+        
+        console.log('Form data:', new FormData(this));
+    });
+</script>
 @endpush
